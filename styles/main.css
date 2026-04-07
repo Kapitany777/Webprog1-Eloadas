@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+header {
+    margin: 0;
+    padding: 10px;    
+    background-color: #404040;
+    color: #ffffff;
+}
+
+nav {
+    float: left;
+}
+
+nav ul {
+    margin: 20px;
+    list-style-type: none;
+}
+
+article {
+    margin-left: 200px;
+}
+
+p {
+    margin: 10px;
+}
+
+footer {
+    margin: 0;
+    padding: 10px;
+    background-color: #404040;
+    color: #ffffff;
+}
+
