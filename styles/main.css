@@ -5,7 +5,7 @@
 }
 
 body {
-    background-color: #e0e0e0;
+    background-color: #ffffff;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
@@ -51,25 +51,29 @@ article {
     margin-left: 200px;
 }
 
-article h2 {
+div#content {
+    margin-left: 200px;
+}
+
+h2 {
     margin: 20px 10px;
     color: #0092bf;
 }
 
-article h3 {
+h3 {
     margin: 10px;
     color: #0092bf;
 }
 
-article ul {
+ul {
     margin-left: 40px;
 }
 
-article li {
+li {
     line-height: 160%;
 }
 
-article p {
+p {
     margin: 25px 10px;
 }
 
