@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <script type="text/javascript" src="oojs.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/oojs.css">
+    <title>OOJS menü</title>
+</head>
+
+<body>
+<header>
+    <img src="images/logo.png">
+    <h1>Web programozás-1 Előadás Házi feladat</h1>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="index.html">Főoldal menü</a></li>
+        <li><a href="javascript.html">Javascript menü</a></li>
+        <li><a href="react.html">React menü</a></li>
+        <li><a href="spa.html">SPA menü</a></li>
+        <li><a href="fetchapi.html">Fetch API menü</a></li>
+        <li><a href="axios.html">Axios menü</a></li>
+        <li><a href="oojs.html">OOJS menü</a></li>
+    </ul>
+</nav>
+
+<div id="content">
+    <h2>OOJS menü</h2>
+
+    <div>
+        <div>
+            <label>Szélesség:</label>
+            <input type="text" id="width" maxlength="4">
+
+            <label>Magasság:</label>
+            <input type="text" id="height" maxlength="4">
+
+            <button onclick="resize();">Átméretezés</button>
+        </div>
+
+        <div>
+            <label>Elforgatás (fok):</label>
+            <input type="text" id="angle" maxlength="4">
+
+            <button onclick="rotate();">Elforgatás</button>
+        </div>
+
+        <div>
+            <label>Keret vastagsága:</label>
+            <input type="text" id="borderWidth" maxlength="2">
+
+            <button onclick="setBorderWidth();">Keret</button>
+        </div>
+
+        <div>
+            <button onclick="image.show();">Megjelenítés</button>
+            <button onclick="image.hide();">Elrejtés</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const div = document.getElementById("content");
+        const image = new BorderedImage("images/image1.jpg", div, 272, 484);
+    </script>
+</div>
+
+<footer>
+    Készítette: Török Viktor - N1EEZB
+</footer>
+</body>
+</html>
