@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <link rel="stylesheet" type="text/css" href="styles/fetchapi.css">
+    <script type="text/javascript" src="fetchapi.js"></script>
+    <title>Fetch API menü</title>
+</head>
+
+<body onload="printCinemas();">
+<header>
+    <img src="images/logo.png">
+    <h1>Web programozás-1 Előadás Házi feladat</h1>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="index.html">Főoldal menü</a></li>
+        <li><a href="javascript.html">Javascript menü</a></li>
+        <li><a href="reactmenu/index.html" target="_blank">React menü</a></li>
+        <li><a href="reactspa/index.html" target="_blank">SPA menü</a></li>
+        <li><a href="fetchapi.html">Fetch API menü</a></li>
+        <li><a href="axios.html">Axios menü</a></li>
+        <li><a href="oojs.html">OOJS menü</a></li>
+    </ul>
+</nav>
+
+<div id="content">
+    <h2>Fetch API menü</h2>
+
+    <div class="cinemas-form">
+        <form onsubmit="event.preventDefault(); onFormSubmit();">
+			<div>
+				<label>Név*</label><label class="validation-error hide" id="nameValidationError">Kötelezően kitöltendő mező</label>
+				<input type="text" name="mozinev" id="mozinev">
+			</div>
+			<div>
+				<label>Irányítószám</label>
+				<input type="text" name="irszam" id="irszam" maxlength="4">
+			</div>
+			<div>
+				<label>Cím</label>
+				<input type="text" name="cim" id="cim">
+			</div>
+			<div>
+				<label>Telefon</label>
+				<input type="text" name="telefon" id="telefon">
+			</div>
+			<div class="form-action-buttons">
+				<input type="submit" value="Rögzítés">
+			</div>
+		</form>
+    </div>
+
+    <div class="cinemas-list">
+        <table id="cinemalist" class="cinemas-table">
+            <thead>
+                <tr>
+                    <th>Név</th>
+                    <th>Irányítószám</th>
+                    <th>Cím</th>
+                    <th>Telefon</th>
+                    <th>Művelet</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<footer>
+    Készítette: Török Viktor - N1EEZB
+</footer>
+</body>
+</html>
