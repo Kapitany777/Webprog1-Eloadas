@@ -1,0 +1,27 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.trigCalculator {
+    background-color: #e0e0e0;
+    /* display: inline-block; */
+    width: fit-content;
+    padding: 20px;
+}
+
+.input {
+    background-color: #808080;
+    height: fit-content;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+.output {
+    height: 40px;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13pt;
+    font-weight: bold;
+}
