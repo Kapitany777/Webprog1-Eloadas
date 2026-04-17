@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Axios CRUD - Keretben</title>
+    <style>
+        /* Néhány extra kiegészítő stílus a biztos sikerhez,
+           ha a main.css nem fedné le teljesen a keretezést */
+        .content-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .delete {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+        }
+
+        .update {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body onload="loadPosts();">
+    <header>
+        <img src="images/logo.png" alt="Logo">
+        <h1>Web programozás-1 Előadás Házi feladat</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Főoldal menü</a></li>
+            <li><a href="javascript.html">Javascript menü</a></li>
+            <li><a href="reactmenu/index.html" target="_blank">React menü</a></li>
+            <li><a href="reactspa/index.html" target="_blank">SPA menü</a></li>
+            <li><a href="fetchapi.html">Fetch API menü</a></li>
+            <li><a href="axios.html">Axios menü</a></li>
+            <li><a href="oojs.html">OOJS menü</a></li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <div class="content-container">
+            <h2>Axios CRUD Bejegyzések Kezelése</h2>
+
+            <fieldset style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 25px;">
+                <legend><strong>Új bejegyzés hozzáadása</strong></legend>
+                <div class="cinemas-form">
+                    <form onsubmit="event.preventDefault(); createPost();">
+                        <table style="width: 100%; border: none;">
+                            <tr>
+                                <td><label for="title">Cím*:</label></td>
+                                <td><input type="text" id="title" style="width: 90%;" placeholder="Mi a bejegyzés címe?"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="body">Tartalom:</label></td>
+                                <td><input type="text" id="body" style="width: 90%;" placeholder="Rövid leírás..."></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: right; padding-top: 10px;">
+                                    <div class="form-action-buttons">
+                                        <input type="submit" value="Rögzítés a listába" class="action-btn update">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </fieldset>
+
+            <div class="cinemas-list">
+                <table id="posts" class="cinemas-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #eee;">
+                            <th style="border: 1px solid #ddd; padding: 10px;">ID</th>
+                            <th style="border: 1px solid #ddd; padding: 10px;">Cím</th>
+                            <th style="border: 1px solid #ddd; padding: 10px;">Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody id="posts-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
+    </footer>
+
+    <script>
+        const API = "https://jsonplaceholder.typicode.com/posts";
+        let localPosts = [];
+
+        // Adatok betöltése az API-ról
+        function loadPosts() {
+            axios.get(API).then(res => {
+                localPosts = res.data.slice(0, 10);
+                renderTable();
+            }).catch(err => {
+                console.error("Hiba történt:", err);
+                alert("Nem sikerült betölteni az adatokat.");
+            });
+        }
+
+        // Táblázat újraépítése a localPosts tömbből
+        function renderTable() {
+            const tableBody = document.getElementById("posts-body");
+            tableBody.innerHTML = "";
+
+            localPosts.forEach(p => {
+                const row = tableBody.insertRow();
+                row.style.borderBottom = "1px solid #eee";
+                row.innerHTML = `
+                <td style="padding: 10px; text-align: center;">${p.id}</td>
+                <td style="padding: 10px;">${p.title}</td>
+                <td style="padding: 10px; text-align: center;">
+                    <button class="action-btn update" onclick="updatePost(${p.id})">Módosítás</button>
+                    <button class="action-btn delete" onclick="deletePost(${p.id})">Törlés</button>
+                </td>
+            `;
+            });
+        }
+
+        // Új post létrehozása
+        function createPost() {
+            const titleVal = document.getElementById("title").value;
+            const bodyVal = document.getElementById("body").value;
+
+            if (!titleVal) {
+                alert("A cím kitöltése kötelező!");
+                return;
+            }
+
+            axios.post(API, { title: titleVal, body: bodyVal }).then(res => {
+                // Helyileg hozzáadjuk a listához (mivel a JSONPlaceholder nem menti ténylegesen)
+                const newId = localPosts.length > 0 ? Math.max(...localPosts.map(p => p.id)) + 1 : 1;
+                localPosts.unshift({ id: newId, title: titleVal, body: bodyVal }); // A lista elejére teszi
+
+                document.getElementById("title").value = "";
+                document.getElementById("body").value = "";
+                renderTable();
+            });
+        }
+
+        // Módosítás
+        function updatePost(id) {
+            const newTitle = prompt("Add meg az új címet:", "");
+            if (newTitle === null || newTitle === "") return;
+
+            axios.put(`${API}/${id}`, { title: newTitle }).then(() => {
+                const item = localPosts.find(p => p.id === id);
+                if (item) item.title = newTitle;
+                renderTable();
+            });
+        }
+
+        // Törlés
+        function deletePost(id) {
+            if (!confirm("Biztosan törölni akarod ezt a bejegyzést?")) return;
+
+            axios.delete(`${API}/${id}`).then(() => {
+                localPosts = localPosts.filter(p => p.id !== id);
+                renderTable();
+            });
+        }
+    </script>
+</body>
+</html>
