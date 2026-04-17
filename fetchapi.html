@@ -4,14 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="styles/main.css">
-    <link rel="stylesheet" type="text/css" href="styles/fetchapi.css">
-    <script type="text/javascript" src="fetchapi.js"></script>
-    <title>Fetch API menü</title>
+    <title>Fetch API CRUD – Keretben</title>
+    <style>
+        .content-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .action-btn {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin: 2px;
+        }
+        .delete { background-color: #ff4d4d; color: white; border: none; }
+        .update { background-color: #4CAF50; color: white; border: none; }
+        .action-btn:hover { opacity: 0.8; }
+    </style>
 </head>
 
-<body onload="printCinemas();">
+<body onload="loadPosts();">
 <header>
-    <img src="images/logo.png">
+    <img src="images/logo.png" alt="Logo">
     <h1>Web programozás-1 Előadás Házi feladat</h1>
 </header>
 
@@ -28,51 +45,136 @@
 </nav>
 
 <div id="content">
-    <h2>Fetch API menü</h2>
+    <div class="content-container">
+        <h2>Fetch API CRUD bejegyzések</h2>
 
-    <div class="cinemas-form">
-        <form onsubmit="event.preventDefault(); onFormSubmit();">
-			<div>
-				<label>Név*</label><label class="validation-error hide" id="nameValidationError">Kötelezően kitöltendő mező</label>
-				<input type="text" name="mozinev" id="mozinev">
-			</div>
-			<div>
-				<label>Irányítószám</label>
-				<input type="text" name="irszam" id="irszam" maxlength="4">
-			</div>
-			<div>
-				<label>Cím</label>
-				<input type="text" name="cim" id="cim">
-			</div>
-			<div>
-				<label>Telefon</label>
-				<input type="text" name="telefon" id="telefon">
-			</div>
-			<div class="form-action-buttons">
-				<input type="submit" value="Rögzítés">
-			</div>
-		</form>
-    </div>
+        <fieldset style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 25px;">
+            <legend><strong>Új bejegyzés hozzáadása (Fetch)</strong></legend>
+            <div class="cinemas-form">
+                <form onsubmit="event.preventDefault(); createPost();">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td><label for="title">Cím*:</label></td>
+                            <td><input type="text" id="title" style="width: 90%;" placeholder="Bejegyzés címe"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="body">Tartalom:</label></td>
+                            <td><input type="text" id="body" style="width: 90%;" placeholder="Tartalom leírása..."></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: right; padding-top: 10px;">
+                                <div class="form-action-buttons">
+                                    <input type="submit" value="Hozzáadás" class="action-btn update">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </fieldset>
 
-    <div class="cinemas-list">
-        <table id="cinemalist" class="cinemas-table">
-            <thead>
-                <tr>
-                    <th>Név</th>
-                    <th>Irányítószám</th>
-                    <th>Cím</th>
-                    <th>Telefon</th>
-                    <th>Művelet</th>
-                </tr>
-            </thead>
-
-            <tbody></tbody>
-        </table>
+        <div class="cinemas-list">
+            <table id="posts" class="cinemas-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #eee;">
+                        <th style="border: 1px solid #ddd; padding: 10px;">ID</th>
+                        <th style="border: 1px solid #ddd; padding: 10px;">Cím</th>
+                        <th style="border: 1px solid #ddd; padding: 10px;">Műveletek</th>
+                    </tr>
+                </thead>
+                <tbody id="posts-body">
+                    </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <footer>
-    Készítette: Török Viktor - N1EEZB
+    Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
 </footer>
+
+<script>
+const API = "https://jsonplaceholder.typicode.com/posts";
+let localPosts = [];
+
+function loadPosts() {
+    fetch(API)
+        .then(res => res.json())
+        .then(data => {
+            localPosts = data.slice(0, 10);
+            renderTable();
+        })
+        .catch(err => console.error("Hiba:", err));
+}
+
+function renderTable() {
+    const tableBody = document.getElementById("posts-body");
+    tableBody.innerHTML = "";
+    
+    localPosts.forEach(p => {
+        const row = tableBody.insertRow();
+        row.style.borderBottom = "1px solid #eee";
+        row.innerHTML = `
+            <td style="padding: 10px; text-align: center;">${p.id}</td>
+            <td style="padding: 10px;">${p.title}</td>
+            <td style="padding: 10px; text-align: center;">
+                <button class="action-btn update" onclick="updatePost(${p.id})">Módosít</button>
+                <button class="action-btn delete" onclick="deletePost(${p.id})">Töröl</button>
+            </td>
+        `;
+    });
+}
+
+function createPost() {
+    const title = document.getElementById("title").value;
+    const body = document.getElementById("body").value;
+    
+    if (!title || !body) {
+        alert("Töltsd ki a mezőket!");
+        return;
+    }
+
+    fetch(API, {
+        method: "POST",
+        body: JSON.stringify({ title, body }),
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(res => res.json())
+    .then(() => {
+        const maxId = localPosts.length > 0 ? Math.max(...localPosts.map(p => p.id)) : 0;
+        localPosts.unshift({ id: maxId + 1, title, body });
+        document.getElementById("title").value = "";
+        document.getElementById("body").value = "";
+        renderTable();
+    });
+}
+
+function updatePost(id) {
+    id = parseInt(id);
+    const newTitle = prompt("Új cím:");
+    if (!newTitle) return;
+
+    fetch(`${API}/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ title: newTitle }),
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(() => {
+        const item = localPosts.find(p => p.id === id);
+        if (item) item.title = newTitle;
+        renderTable();
+    });
+}
+
+function deletePost(id) {
+    if(!confirm("Biztosan törlöd?")) return;
+    id = parseInt(id);
+    fetch(`${API}/${id}`, { method: "DELETE" })
+        .then(() => {
+            localPosts = localPosts.filter(p => p.id !== id);
+            renderTable();
+        });
+}
+</script>
 </body>
 </html>
