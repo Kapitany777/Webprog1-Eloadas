@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <title>React CRUD – Rádiókiosztás</title>
+    <style>
+        .content-container {
+            border: 1px solid #ddd;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .external-link-card {
+            background-color: #fff;
+            border: 2px dashed #4CAF50;
+            padding: 40px;
+            border-radius: 10px;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .external-link-card:hover {
+            transform: scale(1.02);
+            border-style: solid;
+        }
+        .launch-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        .launch-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <img src="images/logo.png" alt="Logo">
+    <h1>Web programozás-1 Előadás Házi feladat</h1>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="index.html">Főoldal menü</a></li>
+        <li><a href="javascript.html">Javascript menü</a></li>
+        <li><a href="reactmenu/index.html" target="_blank">React menü</a></li>
+        <li><a href="reactspa/index.html" target="_blank">SPA menü</a></li>
+        <li><a href="fetchapi.html">Fetch API menü</a></li>
+        <li><a href="axios.html">Axios menü</a></li>
+        <li><a href="oojs.html">OOJS menü</a></li>
+    </ul>
+</nav>
+
+<div id="content">
+    <div class="content-container">
+        <h2>React CRUD – Rádiókiosztás</h2>
+        
+        <p>A feladat ezen része egy különálló React alkalmazásként lett kifejlesztve.</p>
+        
+        <div class="external-link-card">
+            <p>A teljes körű CRUD funkciók eléréséhez kattints az alábbi gombra:</p>
+            <a href="./react-crud/dist/index.html" target="_blank" class="launch-btn">React CRUD Alkalmazás Megnyitása</a>
+            <p style="margin-top: 15px; font-size: 0.9em; color: #666;">(Új ablakban nyílik meg)</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
+</footer>
+
+</body>
+</html>
