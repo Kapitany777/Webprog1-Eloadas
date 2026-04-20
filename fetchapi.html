@@ -4,29 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="styles/main.css">
-    <title>Fetch API CRUD – Keretben</title>
+    <title>Fetch API CRUD – Moziműsor</title>
     <style>
-        .content-container {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-        .action-btn {
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            margin: 2px;
-        }
-        .delete { background-color: #ff4d4d; color: white; border: none; }
-        .update { background-color: #4CAF50; color: white; border: none; }
-        .action-btn:hover { opacity: 0.8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .btn-container { margin: 20px 0; text-align: center; }
+        button { padding: 8px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; margin: 5px; }
+        .btn-edit { background-color: #4CAF50; color: white; border: none; }
+        .btn-delete { background-color: #f44336; color: white; border: none; }
+        #lapozo-kontener span { font-weight: bold; margin: 0 15px; }
     </style>
 </head>
 
-<body onload="loadPosts();">
+<body>
 <header>
     <img src="images/logo.png" alt="Logo">
     <h1>Web programozás-1 Előadás Házi feladat</h1>
@@ -36,146 +28,144 @@
     <ul>
         <li><a href="index.html">Főoldal menü</a></li>
         <li><a href="javascript.html">Javascript menü</a></li>
-        <li><a href="./react.html" target="_blank">React menü</a></li>
-        <li><a href="reactspa/index.html" target="_blank">SPA menü</a></li>
+        <li><a href="react.html">React menü</a></li>
+        <li><a href="spa.html">SPA menü</a></li>
         <li><a href="fetchapi.html">Fetch API menü</a></li>
         <li><a href="axios.html">Axios menü</a></li>
         <li><a href="oojs.html">OOJS menü</a></li>
-        <li><a href="Kapcsolat.html">kapcsolat menü</a></li>
+        <li><a href="kapcsolat.html">kapcsolat menü</a></li>
     </ul>
 </nav>
 
-<div id="content">
-    <div class="content-container">
-        <h2>Fetch API CRUD bejegyzések</h2>
+<article>
+    <h2>Fetch API – Filmadatbázis (Lapozható)</h2>
+    
+    <table>
+        <thead>
+            <tr id="tabla-fejlec"></tr>
+        </thead>
+        <tbody id="film-tabla-test"></tbody>
+    </table>
 
-        <fieldset style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 25px;">
-            <legend><strong>Új bejegyzés hozzáadása (Fetch)</strong></legend>
-            <div class="cinemas-form">
-                <form onsubmit="event.preventDefault(); createPost();">
-                    <table style="width: 100%; border: none;">
-                        <tr>
-                            <td><label for="title">Cím*:</label></td>
-                            <td><input type="text" id="title" style="width: 90%;" placeholder="Bejegyzés címe"></td>
-                        </tr>
-                        <tr>
-                            <td><label for="body">Tartalom:</label></td>
-                            <td><input type="text" id="body" style="width: 90%;" placeholder="Tartalom leírása..."></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: right; padding-top: 10px;">
-                                <div class="form-action-buttons">
-                                    <input type="submit" value="Hozzáadás" class="action-btn update">
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </fieldset>
-
-        <div class="cinemas-list">
-            <table id="posts" class="cinemas-table" style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background-color: #eee;">
-                        <th style="border: 1px solid #ddd; padding: 10px;">ID</th>
-                        <th style="border: 1px solid #ddd; padding: 10px;">Cím</th>
-                        <th style="border: 1px solid #ddd; padding: 10px;">Műveletek</th>
-                    </tr>
-                </thead>
-                <tbody id="posts-body">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<footer>
-    Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
-</footer>
+    <div id="lapozo-kontener" class="btn-container"></div>
+</article>
 
 <script>
-const API = "https://jsonplaceholder.typicode.com/posts";
-let localPosts = [];
 
-function loadPosts() {
-    fetch(API)
-        .then(res => res.json())
-        .then(data => {
-            localPosts = data.slice(0, 10);
-            renderTable();
-        })
-        .catch(err => console.error("Hiba:", err));
-}
 
-function renderTable() {
-    const tableBody = document.getElementById("posts-body");
-    tableBody.innerHTML = "";
-    
-    localPosts.forEach(p => {
-        const row = tableBody.insertRow();
-        row.style.borderBottom = "1px solid #eee";
-        row.innerHTML = `
-            <td style="padding: 10px; text-align: center;">${p.id}</td>
-            <td style="padding: 10px;">${p.title}</td>
-            <td style="padding: 10px; text-align: center;">
-                <button class="action-btn update" onclick="updatePost(${p.id})">Módosít</button>
-                <button class="action-btn delete" onclick="deletePost(${p.id})">Töröl</button>
-            </td>
-        `;
-    });
-}
 
-function createPost() {
-    const title = document.getElementById("title").value;
-    const body = document.getElementById("body").value;
-    
-    if (!title || !body) {
-        alert("Töltsd ki a mezőket!");
-        return;
+async function inicializalas() {
+    try {
+        // Mostantól a PHP-t hívjuk meg!
+        const valasz = await fetch('api.php');
+        filmAdatok = await valasz.json();
+
+        // Mivel az adatbázisból jönnek a mezőnevek, kinyerjük őket
+        if (filmAdatok.length > 0) {
+            fejlecNevek = Object.keys(filmAdatok[0]);
+        }
+
+        tablaFrissites();
+    } catch (hiba) {
+        console.error("Hiba az adatok beolvasásakor:", hiba);
     }
-
-    fetch(API, {
-        method: "POST",
-        body: JSON.stringify({ title, body }),
-        headers: { "Content-Type": "application/json" }
-    })
-    .then(res => res.json())
-    .then(() => {
-        const maxId = localPosts.length > 0 ? Math.max(...localPosts.map(p => p.id)) : 0;
-        localPosts.unshift({ id: maxId + 1, title, body });
-        document.getElementById("title").value = "";
-        document.getElementById("body").value = "";
-        renderTable();
-    });
 }
 
-function updatePost(id) {
-    id = parseInt(id);
-    const newTitle = prompt("Új cím:");
-    if (!newTitle) return;
 
-    fetch(`${API}/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ title: newTitle }),
-        headers: { "Content-Type": "application/json" }
-    })
-    .then(() => {
-        const item = localPosts.find(p => p.id === id);
-        if (item) item.title = newTitle;
-        renderTable();
-    });
-}
+let filmAdatok = [];
+let fejlecNevek = [];
+let aktualisOldal = 1;
+const sorOldalankent = 10;
 
-function deletePost(id) {
-    if(!confirm("Biztosan törlöd?")) return;
-    id = parseInt(id);
-    fetch(`${API}/${id}`, { method: "DELETE" })
-        .then(() => {
-            localPosts = localPosts.filter(p => p.id !== id);
-            renderTable();
+async function inicializalas() {
+    try {
+        const valasz = await fetch('film.txt');
+        const buffer = await valasz.arrayBuffer();
+        
+        // Windows-1250 dekódolás az ékezetek miatt
+        const decoder = new TextDecoder('windows-1250');
+        const nyersSzoveg = decoder.decode(buffer);
+
+        const sorok = nyersSzoveg.trim().split('\n');
+        fejlecNevek = sorok[0].split('\t').map(h => h.trim());
+
+        filmAdatok = sorok.slice(1).map(sor => {
+            const cellak = sor.split('\t');
+            let obj = {};
+            fejlecNevek.forEach((nev, i) => obj[nev] = cellak[i] ? cellak[i].trim() : "");
+            return obj;
         });
+
+        tablaFrissites();
+    } catch (hiba) {
+        console.error("Hiba:", hiba);
+    }
 }
+
+function tablaFrissites() {
+    const tablaTest = document.getElementById('film-tabla-test');
+    const fejlecSor = document.getElementById('tabla-fejlec');
+    
+    const start = (aktualisOldal - 1) * sorOldalankent;
+    const end = start + sorOldalankent;
+    const aktualisSzelet = filmAdatok.slice(start, end);
+
+    // Fejléc
+    fejlecSor.innerHTML = fejlecNevek.map(h => `<th>${h}</th>`).join('') + "<th>Műveletek</th>";
+    
+    // Sorok
+    tablaTest.innerHTML = aktualisSzelet.map((film, index) => {
+        const eredetiIndex = start + index;
+        return `
+        <tr>
+            ${fejlecNevek.map(h => `<td>${film[h]}</td>`).join('')}
+            <td>
+                <button class="btn-edit" onclick="szerkesztes(${eredetiIndex})">Szerkeszt</button>
+                <button class="btn-delete" onclick="torles(${eredetiIndex})">Töröl</button>
+            </td>
+        </tr>`;
+    }).join('');
+
+    vezerlokFrissitese();
+}
+
+function vezerlokFrissitese() {
+    const lapozo = document.getElementById('lapozo-kontener');
+    const osszesOldal = Math.ceil(filmAdatok.length / sorOldalankent);
+    
+    lapozo.innerHTML = `
+        <button onclick="oldalValtas(-1)" ${aktualisOldal === 1 ? 'disabled' : ''}>Előző</button>
+        <span> ${aktualisOldal} / ${osszesOldal} </span>
+        <button onclick="oldalValtas(1)" ${aktualisOldal === osszesOldal ? 'disabled' : ''}>Következő</button>
+    `;
+}
+
+function oldalValtas(irany) {
+    aktualisOldal += irany;
+    tablaFrissites();
+}
+
+function torles(index) {
+    if (confirm("Biztosan törlöd?")) {
+        filmAdatok.splice(index, 1);
+        // Ha az utolsó elemet töröltük az oldalon, ugorjunk vissza
+        if ((aktualisOldal - 1) * sorOldalankent >= filmAdatok.length && aktualisOldal > 1) {
+            aktualisOldal--;
+        }
+        tablaFrissites();
+    }
+}
+
+function szerkesztes(index) {
+    const ujCim = prompt("Új filmcím:", filmAdatok[index].filmcim);
+    if (ujCim) {
+        filmAdatok[index].filmcim = ujCim;
+        tablaFrissites();
+    }
+}
+
+window.onload = inicializalas;
 </script>
+
 </body>
 </html>

@@ -4,189 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <title>Axios API – Mozik listája</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <title>Axios CRUD - Keretben</title>
     <style>
-        /* Néhány extra kiegészítő stílus a biztos sikerhez,
-           ha a main.css nem fedné le teljesen a keretezést */
-        .content-container {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-
-        .action-btn {
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        .delete {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-        }
-
-        .update {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-        }
-
-        .action-btn:hover {
-            opacity: 0.8;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #2196F3; color: white; } /* Kék fejléc az Axios-hoz */
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .btn-container { margin: 20px 0; text-align: center; }
+        button { padding: 8px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; margin: 5px; }
+        .btn-view { background-color: #2196F3; color: white; border: none; }
     </style>
 </head>
 
-<body onload="loadPosts();">
-    <header>
-        <img src="images/logo.png" alt="Logo">
-        <h1>Web programozás-1 Előadás Házi feladat</h1>
-    </header>
+<body>
+<header>
+    <img src="images/logo.png" alt="Logo">
+    <h1>Web programozás-1 Előadás Házi feladat</h1>
 
- <nav>
+</header>
+
+<<nav>
     <ul>
         <li><a href="index.html">Főoldal menü</a></li>
         <li><a href="javascript.html">Javascript menü</a></li>
-        <li><a href="react.html" target="_blank">React menü</a></li>
-        <li><a href="reactspa/index.html" target="_blank">SPA menü</a></li>
+        <li><a href="react.html">React menü</a></li>
+        <li><a href="spa.html">SPA menü</a></li>
         <li><a href="fetchapi.html">Fetch API menü</a></li>
         <li><a href="axios.html">Axios menü</a></li>
         <li><a href="oojs.html">OOJS menü</a></li>
-        <li><a href="Kapcsolat.html">kapcsolat menü</a></li>
+        <li><a href="kapcsolat.html">kapcsolat menü</a></li>
     </ul>
 </nav>
 
 
-    <div id="content">
-        <div class="content-container">
-            <h2>Axios CRUD Bejegyzések Kezelése</h2>
+<article>
+    <h2>Axios API – Budapesti Mozik (mozi.txt)</h2>
+    
+    <table>
+        <thead>
+            <tr id="tabla-fejlec"></tr>
+        </thead>
+        <tbody id="mozi-tabla-test"></tbody>
+    </table>
 
-            <fieldset style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 25px;">
-                <legend><strong>Új bejegyzés hozzáadása</strong></legend>
-                <div class="cinemas-form">
-                    <form onsubmit="event.preventDefault(); createPost();">
-                        <table style="width: 100%; border: none;">
-                            <tr>
-                                <td><label for="title">Cím*:</label></td>
-                                <td><input type="text" id="title" style="width: 90%;" placeholder="Mi a bejegyzés címe?"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="body">Tartalom:</label></td>
-                                <td><input type="text" id="body" style="width: 90%;" placeholder="Rövid leírás..."></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align: right; padding-top: 10px;">
-                                    <div class="form-action-buttons">
-                                        <input type="submit" value="Rögzítés a listába" class="action-btn update">
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
-            </fieldset>
+    <div id="lapozo-kontener" class="btn-container"></div>
+</article>
 
-            <div class="cinemas-list">
-                <table id="posts" class="cinemas-table" style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background-color: #eee;">
-                            <th style="border: 1px solid #ddd; padding: 10px;">ID</th>
-                            <th style="border: 1px solid #ddd; padding: 10px;">Cím</th>
-                            <th style="border: 1px solid #ddd; padding: 10px;">Műveletek</th>
-                        </tr>
-                    </thead>
-                    <tbody id="posts-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+  <script>
 
-    <footer>
-        Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
-    </footer>
 
-    <script>
-        const API = "https://jsonplaceholder.typicode.com/posts";
-        let localPosts = [];
+let moziAdatok = [];
+let fejlecNevek = [];
+let aktualisOldal = 1;
+const sorOldalankent = 10;
 
-        // Adatok betöltése az API-ról
-        function loadPosts() {
-            axios.get(API).then(res => {
-                localPosts = res.data.slice(0, 10);
-                renderTable();
-            }).catch(err => {
-                console.error("Hiba történt:", err);
-                alert("Nem sikerült betölteni az adatokat.");
+async function moziBetoltes() {
+    try {
+        // Axios hívás arraybuffer-rel az ékezetek miatt
+        const valasz = await axios.get('mozi.txt', { responseType: 'arraybuffer' });
+        
+        const decoder = new TextDecoder('windows-1250');
+        const nyersSzoveg = decoder.decode(valasz.data);
+
+        const sorok = nyersSzoveg.trim().split('\n').map(s => s.replace('\r', ''));
+        fejlecNevek = sorok[0].split('\t').map(h => h.trim());
+
+        // Adatok objektummá alakítása
+        moziAdatok = sorok.slice(1).map((sor, index) => {
+            const cellak = sor.split('\t');
+            let obj = { id: index }; // Egyedi ID a műveletekhez
+            fejlecNevek.forEach((nev, i) => {
+                obj[nev] = cellak[i] ? cellak[i].trim() : "";
             });
-        }
+            return obj;
+        });
 
-        // Táblázat újraépítése a localPosts tömbből
-        function renderTable() {
-            const tableBody = document.getElementById("posts-body");
-            tableBody.innerHTML = "";
+        tablaFrissites();
+    } catch (hiba) {
+        console.error("Axios hiba:", hiba);
+    }
+}
 
-            localPosts.forEach(p => {
-                const row = tableBody.insertRow();
-                row.style.borderBottom = "1px solid #eee";
-                row.innerHTML = `
-                <td style="padding: 10px; text-align: center;">${p.id}</td>
-                <td style="padding: 10px;">${p.title}</td>
-                <td style="padding: 10px; text-align: center;">
-                    <button class="action-btn update" onclick="updatePost(${p.id})">Módosítás</button>
-                    <button class="action-btn delete" onclick="deletePost(${p.id})">Törlés</button>
-                </td>
-            `;
-            });
-        }
+function tablaFrissites() {
+    const tablaTest = document.getElementById('mozi-tabla-test');
+    const fejlecSor = document.getElementById('tabla-fejlec');
+    
+    const start = (aktualisOldal - 1) * sorOldalankent;
+    const end = start + sorOldalankent;
+    const szelet = moziAdatok.slice(start, end);
 
-        // Új post létrehozása
-        function createPost() {
-            const titleVal = document.getElementById("title").value;
-            const bodyVal = document.getElementById("body").value;
+    fejlecSor.innerHTML = fejlecNevek.map(h => `<th>${h}</th>`).join('') + "<th>Műveletek</th>";
+    
+    tablaTest.innerHTML = szelet.map((mozi) => `
+        <tr>
+            ${fejlecNevek.map(h => `<td>${mozi[h]}</td>`).join('')}
+            <td>
+                <button class="btn-edit" onclick="moziModositas(${mozi.id})">Szerkeszt</button>
+                <button class="btn-delete" onclick="moziTorles(${mozi.id})">Töröl</button>
+            </td>
+        </tr>`).join('');
 
-            if (!titleVal) {
-                alert("A cím kitöltése kötelező!");
-                return;
-            }
+    vezerlokFrissitese();
+}
 
-            axios.post(API, { title: titleVal, body: bodyVal }).then(res => {
-                // Helyileg hozzáadjuk a listához (mivel a JSONPlaceholder nem menti ténylegesen)
-                const newId = localPosts.length > 0 ? Math.max(...localPosts.map(p => p.id)) + 1 : 1;
-                localPosts.unshift({ id: newId, title: titleVal, body: bodyVal }); // A lista elejére teszi
+// --- CRUD MŰVELETEK ---
 
-                document.getElementById("title").value = "";
-                document.getElementById("body").value = "";
-                renderTable();
-            });
-        }
+function moziTorles(id) {
+    if (confirm("Biztosan törlöd ezt a mozit?")) {
+        moziAdatok = moziAdatok.filter(m => m.id !== id);
+        // Ha kiürül az oldal, ugorjunk vissza
+        const osszesOldal = Math.ceil(moziAdatok.length / sorOldalankent);
+        if (aktualisOldal > osszesOldal && aktualisOldal > 1) aktualisOldal--;
+        tablaFrissites();
+    }
+}
 
-        // Módosítás
-        function updatePost(id) {
-            const newTitle = prompt("Add meg az új címet:", "");
-            if (newTitle === null || newTitle === "") return;
+function moziModositas(id) {
+    const mozi = moziAdatok.find(m => m.id === id);
+    const ujNev = prompt("Mozi új neve:", mozi.mozinev);
+    
+    if (ujNev !== null && ujNev.trim() !== "") {
+        mozi.mozinev = ujNev;
+        tablaFrissites();
+    }
+}
 
-            axios.put(`${API}/${id}`, { title: newTitle }).then(() => {
-                const item = localPosts.find(p => p.id === id);
-                if (item) item.title = newTitle;
-                renderTable();
-            });
-        }
+// Lapozó vezérlők (marad a régi)
+function vezerlokFrissitese() {
+    const lapozo = document.getElementById('lapozo-kontener');
+    const osszesOldal = Math.ceil(moziAdatok.length / sorOldalankent);
+    lapozo.innerHTML = `
+        <button onclick="oldalValtas(-1)" ${aktualisOldal === 1 ? 'disabled' : ''}>Előző</button>
+        <span> ${aktualisOldal} / ${osszesOldal} </span>
+        <button onclick="oldalValtas(1)" ${aktualisOldal === osszesOldal ? 'disabled' : ''}>Következő</button>
+    `;
+}
 
-        // Törlés
-        function deletePost(id) {
-            if (!confirm("Biztosan törölni akarod ezt a bejegyzést?")) return;
+function oldalValtas(irany) {
+    aktualisOldal += irany;
+    tablaFrissites();
+}
 
-            axios.delete(`${API}/${id}`).then(() => {
-                localPosts = localPosts.filter(p => p.id !== id);
-                renderTable();
-            });
-        }
-    </script>
+window.onload = moziBetoltes;
+</script>
 </body>
 </html>
