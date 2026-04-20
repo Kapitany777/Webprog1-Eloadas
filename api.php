@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// InfinityFree MySQL adatok
+
 $host = "sql303.infinityfree.com"; 
 $user = "if0_41428018";           
 $pass = "IITiAvhArV";
@@ -14,7 +14,7 @@ if ($conn->connect_error) {
     die(json_encode(["error" => "Kapcsolódási hiba"]));
 }
 
-// Lekérjük a filmeket (id, filmcim, ev, mufaj, hossz)
+
 $result = $conn->query("SELECT * FROM filmek");
 $adatok = [];
 

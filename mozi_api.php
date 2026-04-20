@@ -19,7 +19,7 @@ switch($method) {
         $result = $conn->query("SELECT * FROM mozik");
         echo json_encode($result->fetch_all(MYSQLI_ASSOC));
         break;
-    // Később ide jöhet a POST (felvétel) és DELETE (törlés)
+    
 }
 $conn->close();
 ?>

@@ -60,7 +60,7 @@ async function inicializalas() {
         const valasz = await fetch('api.php');
         filmAdatok = await valasz.json();
 
-        // Mivel az adatbázisból jönnek a mezőnevek, kinyerjük őket
+        
         if (filmAdatok.length > 0) {
             fejlecNevek = Object.keys(filmAdatok[0]);
         }
@@ -148,7 +148,7 @@ function oldalValtas(irany) {
 function torles(index) {
     if (confirm("Biztosan törlöd?")) {
         filmAdatok.splice(index, 1);
-        // Ha az utolsó elemet töröltük az oldalon, ugorjunk vissza
+        
         if ((aktualisOldal - 1) * sorOldalankent >= filmAdatok.length && aktualisOldal > 1) {
             aktualisOldal--;
         }

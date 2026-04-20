@@ -61,7 +61,7 @@ const sorOldalankent = 10;
 
 async function moziBetoltes() {
     try {
-        // Axios hívás arraybuffer-rel az ékezetek miatt
+       
         const valasz = await axios.get('mozi.txt', { responseType: 'arraybuffer' });
         
         const decoder = new TextDecoder('windows-1250');
@@ -70,7 +70,7 @@ async function moziBetoltes() {
         const sorok = nyersSzoveg.trim().split('\n').map(s => s.replace('\r', ''));
         fejlecNevek = sorok[0].split('\t').map(h => h.trim());
 
-        // Adatok objektummá alakítása
+        
         moziAdatok = sorok.slice(1).map((sor, index) => {
             const cellak = sor.split('\t');
             let obj = { id: index }; // Egyedi ID a műveletekhez
