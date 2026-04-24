@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="styles/main.css">
-    <title>Fetch API CRUD – Moziműsor</title>
+    <title>Fetch API CRUD – Filmadatbázis</title>
     <style>
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
@@ -39,10 +39,17 @@
 
 <article>
     <h2>Fetch API – Filmadatbázis (Lapozható)</h2>
-    
+
     <table>
         <thead>
-            <tr id="tabla-fejlec"></tr>
+            <tr>
+                <th>ID</th>
+                <th>Filmcím</th>
+                <th>Év</th>
+                <th>Műfaj</th>
+                <th>Hossz</th>
+                <th>Műveletek</th>
+            </tr>
         </thead>
         <tbody id="film-tabla-test"></tbody>
     </table>
@@ -50,75 +57,42 @@
     <div id="lapozo-kontener" class="btn-container"></div>
 </article>
 
+<footer>
+    Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
+</footer>
+
 <script>
-
-
-
-async function inicializalas() {
-    try {
-        // Mostantól a PHP-t hívjuk meg!
-        const valasz = await fetch('api.php');
-        filmAdatok = await valasz.json();
-
-        
-        if (filmAdatok.length > 0) {
-            fejlecNevek = Object.keys(filmAdatok[0]);
-        }
-
-        tablaFrissites();
-    } catch (hiba) {
-        console.error("Hiba az adatok beolvasásakor:", hiba);
-    }
-}
-
-
 let filmAdatok = [];
-let fejlecNevek = [];
 let aktualisOldal = 1;
 const sorOldalankent = 10;
 
 async function inicializalas() {
     try {
-        const valasz = await fetch('film.txt');
-        const buffer = await valasz.arrayBuffer();
-        
-        // Windows-1250 dekódolás az ékezetek miatt
-        const decoder = new TextDecoder('windows-1250');
-        const nyersSzoveg = decoder.decode(buffer);
-
-        const sorok = nyersSzoveg.trim().split('\n');
-        fejlecNevek = sorok[0].split('\t').map(h => h.trim());
-
-        filmAdatok = sorok.slice(1).map(sor => {
-            const cellak = sor.split('\t');
-            let obj = {};
-            fejlecNevek.forEach((nev, i) => obj[nev] = cellak[i] ? cellak[i].trim() : "");
-            return obj;
-        });
-
+        const valasz = await fetch('api.php');
+        filmAdatok = await valasz.json();
         tablaFrissites();
     } catch (hiba) {
-        console.error("Hiba:", hiba);
+        console.error("Hiba az adatok beolvasásakor:", hiba);
+        document.getElementById('film-tabla-test').innerHTML =
+            '<tr><td colspan="6" style="color:red">Hiba az adatok betöltésekor!</td></tr>';
     }
 }
 
 function tablaFrissites() {
     const tablaTest = document.getElementById('film-tabla-test');
-    const fejlecSor = document.getElementById('tabla-fejlec');
-    
-    const start = (aktualisOldal - 1) * sorOldalankent;
-    const end = start + sorOldalankent;
-    const aktualisSzelet = filmAdatok.slice(start, end);
 
-    // Fejléc
-    fejlecSor.innerHTML = fejlecNevek.map(h => `<th>${h}</th>`).join('') + "<th>Műveletek</th>";
-    
-    // Sorok
+    const start = (aktualisOldal - 1) * sorOldalankent;
+    const aktualisSzelet = filmAdatok.slice(start, start + sorOldalankent);
+
     tablaTest.innerHTML = aktualisSzelet.map((film, index) => {
         const eredetiIndex = start + index;
         return `
         <tr>
-            ${fejlecNevek.map(h => `<td>${film[h]}</td>`).join('')}
+            <td>${film.id}</td>
+            <td>${film.filmcim ?? ''}</td>
+            <td>${film.ev ?? ''}</td>
+            <td>${film.mufaj ?? ''}</td>
+            <td>${film.hossz ?? ''}</td>
             <td>
                 <button class="btn-edit" onclick="szerkesztes(${eredetiIndex})">Szerkeszt</button>
                 <button class="btn-delete" onclick="torles(${eredetiIndex})">Töröl</button>
@@ -132,10 +106,10 @@ function tablaFrissites() {
 function vezerlokFrissitese() {
     const lapozo = document.getElementById('lapozo-kontener');
     const osszesOldal = Math.ceil(filmAdatok.length / sorOldalankent);
-    
+
     lapozo.innerHTML = `
         <button onclick="oldalValtas(-1)" ${aktualisOldal === 1 ? 'disabled' : ''}>Előző</button>
-        <span> ${aktualisOldal} / ${osszesOldal} </span>
+        <span>${aktualisOldal} / ${osszesOldal}</span>
         <button onclick="oldalValtas(1)" ${aktualisOldal === osszesOldal ? 'disabled' : ''}>Következő</button>
     `;
 }
@@ -146,9 +120,8 @@ function oldalValtas(irany) {
 }
 
 function torles(index) {
-    if (confirm("Biztosan törlöd?")) {
+    if (confirm("Biztosan törlöd ezt a filmet?")) {
         filmAdatok.splice(index, 1);
-        
         if ((aktualisOldal - 1) * sorOldalankent >= filmAdatok.length && aktualisOldal > 1) {
             aktualisOldal--;
         }
@@ -158,8 +131,8 @@ function torles(index) {
 
 function szerkesztes(index) {
     const ujCim = prompt("Új filmcím:", filmAdatok[index].filmcim);
-    if (ujCim) {
-        filmAdatok[index].filmcim = ujCim;
+    if (ujCim !== null && ujCim.trim() !== "") {
+        filmAdatok[index].filmcim = ujCim.trim();
         tablaFrissites();
     }
 }

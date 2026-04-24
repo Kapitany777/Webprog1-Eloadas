@@ -6,79 +6,202 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles/main.css">
     <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-family: sans-serif; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #2196F3; color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .btn-delete { background-color: #f44336; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
-        .btn-delete:hover { background-color: #d32f2f; }
+        #axios-wrap { margin-top: 20px; }
+        #axios-wrap table { width: 100%; border-collapse: collapse; font-family: sans-serif; }
+        #axios-wrap th, #axios-wrap td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 13px; }
+        #axios-wrap th { background-color: #2196F3 !important; color: white !important; }
+        #axios-wrap tr:nth-child(even) { background-color: #f9f9f9; }
+        #axios-wrap tr.szerk-sor { background-color: #fff8e1 !important; }
+        #axios-wrap tr.szerk-sor input {
+            width: 90%; padding: 4px; box-sizing: border-box;
+            border: 1px solid #FF9800; border-radius: 3px; font-size: 12px;
+        }
+        #axios-wrap button {
+            border: none; padding: 5px 10px; cursor: pointer;
+            border-radius: 4px; margin-right: 3px; font-size: 12px; color: white;
+        }
+        #axios-wrap button.btn-edit   { background-color: #FF9800; }
+        #axios-wrap button.btn-delete { background-color: #f44336; }
+        #axios-wrap button.btn-save   { background-color: #4CAF50; }
+        #axios-wrap button.btn-cancel { background-color: #9e9e9e; }
+        #uzenet { padding: 8px 12px; border-radius: 4px; margin: 10px 0; display: none; font-family: sans-serif; min-height: 20px; }
+        #uzenet.siker { background-color: #d4edda; color: #155724; display: block; }
+        #uzenet.hiba  { background-color: #f8d7da; color: #721c24; display: block; }
     </style>
 </head>
 <body>
-    <h1>Mozik kezelése (Axios)</h1>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Mozi Neve</th>
-                <th>Művelet</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-test">
-            </tbody>
-    </table>
 
-    <script>
-        const API_URL = 'http://webprogramozas.infinityfreeapp.com/api/mozi_api.php';
-        let mozik = [];
+<header>
+    <img src="images/logo.png" alt="Logo">
+    <h1>Web programozás-1 Előadás Házi feladat</h1>
+</header>
 
-        // Adatok betöltése
-        function betoltes() {
-            axios.get(API_URL)
-                .then(res => {
-                    mozik = res.data;
-                    megjelenites();
-                })
-                .catch(err => console.error("Hiba a betöltéskor:", err));
-        }
+<nav>
+    <ul>
+        <li><a href="index.html">Főoldal menü</a></li>
+        <li><a href="javascript.html">Javascript menü</a></li>
+        <li><a href="react.html">React menü</a></li>
+        <li><a href="spa.html">SPA menü</a></li>
+        <li><a href="fetchapi.html">Fetch API menü</a></li>
+        <li><a href="axios.html">Axios menü</a></li>
+        <li><a href="oojs.html">OOJS menü</a></li>
+        <li><a href="kapcsolat.html">Kapcsolat menü</a></li>
+    </ul>
+</nav>
 
-        // Táblázat kirajzolása
-        function megjelenites() {
-            const tbody = document.getElementById('tabla-test');
-            if (mozik.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3">Nincs megjeleníthető adat.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = mozik.map(m => `
+<article>
+    <h2>Mozik kezelése (Axios + Adatbázis)</h2>
+    <div id="uzenet"></div>
+    <div id="axios-wrap">
+        <table id="mozik-tabla">
+            <thead>
                 <tr>
-                    <td>${m.id}</td>
-                    <td>${m.mozinev}</td>
-                    <td>
-                        <button class="btn-delete" onclick="torles(${m.id})">Törlés</button>
-                    </td>
+                    <th>ID</th>
+                    <th>Mozi neve</th>
+                    <th>Fkod</th>
+                    <th>Moziazon</th>
+                    <th>Irányítószám</th>
+                    <th>Cím</th>
+                    <th>Telefon</th>
+                    <th>Művelet</th>
                 </tr>
-            `).join('');
-        }
+            </thead>
+            <tbody id="tabla-test">
+                </tbody>
+        </table>
+    </div>
+</article>
 
-        // Törlés funkció
-        function torles(id) {
-            if (confirm("Biztosan törlöd ezt a mozit?")) {
-                axios.delete(`${API_URL}?id=${id}`)
-                    .then(() => {
-                        // Frissítjük a helyi listát is
-                        mozik = mozik.filter(m => m.id !== id);
-                        megjelenites();
-                    })
-                    .catch(err => {
-                        alert("Hiba a törlés során!");
-                        console.error(err);
-                    });
-            }
-        }
+<footer>
+    Készítette: Török Viktor - N1EEZB & Bencze Szabolcs - O71J6P
+</footer>
 
-        // Indítás
-        betoltes();
-    </script>
+<script>
+var API_URL = 'mozi_api.php';
+var mozik = [];
+var szerkesztettId = null;
+
+// Adatok betöltése
+function betoltes() {
+    axios.get(API_URL)
+        .then(function(res) {
+            mozik = res.data;
+            megjelenites();
+        })
+        .catch(function(err) {
+            uzenetMutat('Hiba az adatok betöltésekor!', 'hiba');
+            console.error('Hiba:', err);
+        });
+}
+
+// Táblázat kirajzolása
+function megjelenites() {
+    var tbody = document.getElementById('tabla-test');
+    if (!mozik || mozik.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8">Nincs megjeleníthető adat.</td></tr>';
+        return;
+    }
+
+    var html = '';
+    for (var i = 0; i < mozik.length; i++) {
+        var m = mozik[i];
+        
+        // FONTOS: Itt == kell, mert a szerkesztettId szám, az m.id pedig lehet string!
+        if (szerkesztettId == m.id) { 
+            html += '<tr class="szerk-sor">';
+            html += '<td>' + m.id + '</td>';
+            html += '<td><input type="text" id="s-mozinev" value="' + (m.mozinev || '') + '"></td>';
+            html += '<td><input type="text" id="s-fkod" value="' + (m.fkod || '') + '"></td>';
+            html += '<td><input type="text" id="s-moziazon" value="' + (m.moziazon || '') + '"></td>';
+            html += '<td><input type="text" id="s-irszam" value="' + (m.irszam || '') + '" maxlength="4"></td>';
+            html += '<td><input type="text" id="s-cim" value="' + (m.cim || '') + '"></td>';
+            html += '<td><input type="text" id="s-telefon" value="' + (m.telefon || '') + '"></td>';
+            html += '<td>';
+            html += '<button class="btn-save" onclick="mentesDB(' + m.id + ')">Mentés</button>';
+            html += '<button class="btn-cancel" onclick="szerkesztesMegse()">Mégse</button>';
+            html += '</td></tr>';
+        } else {
+            html += '<tr>';
+            html += '<td>' + m.id + '</td>';
+            html += '<td>' + (m.mozinev || '') + '</td>';
+            html += '<td>' + (m.fkod || '') + '</td>';
+            html += '<td>' + (m.moziazon || '') + '</td>';
+            html += '<td>' + (m.irszam || '') + '</td>';
+            html += '<td>' + (m.cim || '') + '</td>';
+            html += '<td>' + (m.telefon || '') + '</td>';
+            html += '<td>';
+            html += '<button class="btn-edit" onclick="szerkesztesIndit(' + m.id + ')">Szerkeszt</button>';
+            html += '<button class="btn-delete" onclick="torles(' + m.id + ')">Törlés</button>';
+            html += '</td></tr>';
+        }
+    }
+    tbody.innerHTML = html;
+}
+
+// Eseménykezelők
+function szerkesztesIndit(id) {
+    szerkesztettId = id;
+    megjelenites();
+}
+
+function szerkesztesMegse() {
+    szerkesztettId = null;
+    megjelenites();
+}
+
+function mentesDB(id) {
+    var adatok = {
+        id:       id,
+        mozinev:  document.getElementById('s-mozinev').value.trim(),
+        fkod:     document.getElementById('s-fkod').value.trim(),
+        moziazon: document.getElementById('s-moziazon').value.trim(),
+        irszam:   document.getElementById('s-irszam').value.trim(),
+        cim:      document.getElementById('s-cim').value.trim(),
+        telefon:  document.getElementById('s-telefon').value.trim()
+    };
+
+    if (!adatok.mozinev) {
+        alert('A mozi neve kötelező!');
+        return;
+    }
+
+    axios.put(API_URL, adatok)
+        .then(function(res) {
+            uzenetMutat('Sikeres mentés!', 'siker');
+            szerkesztettId = null;
+            betoltes(); // Frissítjük a listát a szerverről
+        })
+        .catch(function(err) {
+            uzenetMutat('Hiba a mentés során!', 'hiba');
+            console.error(err);
+        });
+}
+
+function torles(id) {
+    if (confirm('Biztosan törlöd ezt a mozit?')) {
+        axios.delete(API_URL + '?id=' + id)
+            .then(function() {
+                uzenetMutat('Sikeres törlés!', 'siker');
+                betoltes();
+            })
+            .catch(function(err) {
+                uzenetMutat('Hiba a törlés során!', 'hiba');
+            });
+    }
+}
+
+function uzenetMutat(szoveg, tipus) {
+    var el = document.getElementById('uzenet');
+    el.textContent = szoveg;
+    el.className = tipus;
+    el.style.display = 'block';
+    setTimeout(function() {
+        el.style.display = 'none';
+    }, 3000);
+}
+
+// Kezdő betöltés
+betoltes();
+</script>
 </body>
 </html>
