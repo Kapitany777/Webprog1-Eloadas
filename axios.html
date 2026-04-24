@@ -106,7 +106,7 @@ function megjelenites() {
     for (var i = 0; i < mozik.length; i++) {
         var m = mozik[i];
         
-        // FONTOS: Itt == kell, mert a szerkesztettId szám, az m.id pedig lehet string!
+        
         if (szerkesztettId == m.id) { 
             html += '<tr class="szerk-sor">';
             html += '<td>' + m.id + '</td>';
@@ -169,7 +169,7 @@ function mentesDB(id) {
         .then(function(res) {
             uzenetMutat('Sikeres mentés!', 'siker');
             szerkesztettId = null;
-            betoltes(); // Frissítjük a listát a szerverről
+            betoltes(); 
         })
         .catch(function(err) {
             uzenetMutat('Hiba a mentés során!', 'hiba');
